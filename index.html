@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacology Examination - Part 2 (100 Questions)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            max-width: 650px;
+            width: 100%;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+        .progress {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            text-align: right;
+            font-weight: bold;
+        }
+        .question {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-label {
+            background-color: #f8f9fa;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            color: #495057;
+        }
+        .option-label:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.2);
+            pointer-events: none;
+        }
+        /* Real-time Feedback Classes */
+        .option-label.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724 !important;
+            font-weight: bold;
+        }
+        .option-label.wrong {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24 !important;
+        }
+        .option-label.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #next-btn, #submit-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        #next-btn:hover, #submit-btn:hover {
+            background-color: #27ae60;
+        }
+        #prev-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        #prev-btn:hover {
+            background-color: #7f8c8d;
+        }
+        #result-container {
+            text-align: center;
+        }
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2ecc71;
+            margin: 20px 0;
+        }
+        .restart-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        .restart-btn:hover {
+            background-color: #2980b9;
+        }
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-box">
+        <div class="progress" id="progress">Question 1 of 100</div>
+        <div class="question" id="question-text">Loading question...</div>
+        <div class="options" id="options-container"></div>
+        <div class="buttons">
+            <button id="prev-btn" onclick="prevQuestion()" disabled>Previous</button>
+            <button id="next-btn" onclick="nextQuestion()">Next</button>
+            <button id="submit-btn" class="hide" onclick="showResults()">Submit Exam</button>
+        </div>
+    </div>
+
+    <div id="result-container" class="hide">
+        <h2>Exam Evaluation Completed</h2>
+        <p>Your Final Score:</p>
+        <div class="score-display" id="score-text">0 / 100</div>
+        <p id="feedback-text"></p>
+        <button class="restart-btn" onclick="restartQuiz()">Restart Exam</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        // 1-10: General Principles & Pharmacodynamics
+        { q: "Which term describes a drug that binds to a receptor and produces a maximal biological response mimicking endogenous molecules?", a: ["Antagonist", "Agonist", "Inverse agonist", "Partial agonist"], c: 1 },
+        { q: "An agent that prevents receptor activation by endogenous molecules or other drugs without causing any response itself is called an:", a: ["Agonist", "Partial agonist", "Antagonist", "Synergist"], c: 2 },
+        { q: "What is the term for the amount of drug required to produce a specific intensity of effect?", a: ["Efficacy", "Potency", "Bioavailability", "Clearance"], c: 1 },
+        { q: "The largest effect that a drug can possibly produce, regardless of the dose size, is called its maximum:", a: ["Potency", "Selectivity", "Efficacy", "Therapeutic index"], c: 2 },
+        { q: "Which of the following is defined as the ratio of a drug's lethal dose (LD50) to its median effective dose (ED50)?", a: ["Therapeutic window", "Therapeutic index", "Half-life", "Steady state"], c: 1 },
+        { q: "When a patient requires progressively larger doses of a drug to achieve the same therapeutic effect, they have developed:", a: ["Dependence", "Addiction", "Tolerance", "Anaphylaxis"], c: 2 },
+        { q: "A rapid decrease in response to a drug after repeated administration over a short period is known as:", a: ["Tachyphylaxis", "Idiosyncrasy", "Cumulative effect", "Synergism"], c: 0 },
+        { q: "An uncommon or unexpected drug response resulting from a genetic predisposition is referred to as an:", a: ["Allergic reaction", "Idiosyncratic effect", "Iatrogenic disease", "Side effect"], c: 1 },
+        { q: "What term denotes a disease or condition produced unintentionally by medical treatment or drug therapy?", a: ["Idiopathic", "Teratogenic", "Iatrogenic", "Carcinogenic"], c: 2 },
+        { q: "A drug effect that causes structural or functional defects in a developing fetus when taken during pregnancy is called:", a: ["Carcinogenic", "Mutagenic", "Teratogenic", "Idiosyncratic"], c: 2 },
+
+        // 11-20: Pharmacokinetics Advanced
+        { q: "Which property allows a drug molecule to easily diffuse across lipid-rich biological cell membranes?", a: ["High ionization", "Water solubility", "Lipid solubility (Lipophilicity)", "High molecular weight"], c: 2 },
+        { q: "Most weak acid drugs are predominantly absorbed in which environment because they remain non-ionized?", a: ["Alkaline environment of the small intestine", "Acidic environment of the stomach", "Neutral environment of blood", "Salivary glands"], c: 1 },
+        { q: "Plasma protein binding slows drug clearance because only which form of the drug can undergo filtration and metabolism?", a: ["Protein-bound drug", "Free (unbound) drug", "Ionized drug", "Lipid-soluble drug"], c: 1 },
+        { q: "The principal plasma protein to which most acidic drugs bind is:", a: ["Alpha-1 acid glycoprotein", "Hemoglobin", "Albumin", "Gamma globulin"], c: 2 },
+        { q: "Phase I metabolic reactions primarily involve which of the following chemical processes?", a: ["Glucuronidation", "Oxidation, reduction, or hydrolysis", "Conjugation", "Acetylation"], c: 1 },
+        { q: "Which major hepatic enzyme family is responsible for metabolizing the vast majority of clinically useful drugs?", a: ["Cytochrome P450 (CYP)", "Monoamine Oxidase (MAO)", "Acetylcholinesterase", "Cyclooxygenase"], c: 0 },
+        { q: "When a drug induces hepatic microsomal enzymes, what is the expected outcome for a co-administered drug metabolized by the same pool?", a: ["Increased therapeutic effect", "Decreased rate of metabolism", "Decreased plasma levels and reduced effect", "Toxic accumulation"], c: 2 },
+        { q: "What is the primary route by which volatile anesthetic gases are excreted from the human body?", a: ["Biliary excretion", "Renal filtration", "Pulmonary exhalation", "Sweat glands"], c: 2 },
+        { q: "The volume of plasma that is completely cleared of a drug per unit of time is defined as:", a: ["Clearance", "Half-life", "Volume of distribution", "Bioavailability"], c: 0 },
+        { q: "How many half-lives are typically required for a drug administered at a constant rate to reach steady-state concentration?", a: ["1 to 2 half-lives", "4 to 5 half-lives", "8 to 10 half-lives", "Over 20 half-lives"], c: 1 },
+ // 21-30: Autonomic Nervous System
+        { q: "What is the primary neurotransmitter released by all postganglionic parasympathetic nerve fibers?", a: ["Norepinephrine", "Epinephrine", "Acetylcholine", "Dopamine"], c: 2 },
+        { q: "Activation of Nicotinic and Muscarinic receptors is associated with which division of the nervous system?", a: ["Sympathetic nervous system", "Parasympathetic nervous system", "Somatic motor system only", "Central nervous system only"], c: 1 },
+        { q: "Which receptor subtype is located on cardiac muscle tissue and increases heart rate and contractility when stimulated?", a: ["Alpha-1", "Beta-1", "Beta-2", "Muscarinic-2"], c: 1 },
+        { q: "Stimulation of which adrenergic receptor leads to smooth muscle relaxation, resulting in bronchodilation?", a: ["Alpha-1", "Alpha-2", "Beta-1", "Beta-2"], c: 3 },
+        { q: "Atropine is chemically classified as a:", a: ["Muscarinic agonist", "Muscarinic antagonist (Anticholinergic)", "Nicotinic antagonist", "Adrenergic blocker"], c: 1 },
+        { q: "What is a classic sign of anticholinergic toxicity, often summarized as 'blind as a bat, dry as a bone'?", a: ["Miosis and diarrhea", "Mydriasis, dry mouth, and urinary retention", "Bradycardia and excessive sweating", "Salivation and lacrimation"], c: 1 },
+        { q: "Which physiological effect is expected following the activation of Alpha-1 adrenergic receptors?", a: ["Vasodilation", "Vasoconstriction", "Bronchospasm", "Bradycardia"], c: 1 },
+        { q: "Pilocarpine is clinically utilized primarily in eye drops to treat glaucoma because it causes:", a: ["Mydriasis", "Miosis and reduces intraocular pressure", "Cycloplegia", "Photophobia"], c: 1 },
+        { q: "Neostigmine acts by reversibly inhibiting which enzyme?", a: ["Monoamine oxidase", "Acetylcholinesterase", "Catechol-O-methyltransferase", "Cyclooxygenase"], c: 1 },
+        { q: "Which autonomic drug is the absolute drug of choice for treating anaphylactic shock?", a: ["Atropine", "Norepinephrine", "Epinephrine", "Propranolol"], c: 2 },
+
+        // 31-40: Cardiovascular System Advanced
+        { q: "Which class of antihypertensives works by blocking the conversion of Angiotensin I to Angiotensin II?", a: ["Angiotensin Receptor Blockers (ARBs)", "Calcium Channel Blockers (CCBs)", "ACE Inhibitors (e.g., Enalapril)", "Beta-blockers"], c: 2 },
+        { q: "What is a prominent, troublesome side effect of ACE inhibitors that often forces patients to switch to ARBs?", a: ["Hyperglycemia", "Dry, persistent cough", "Ototoxicity", "Hypouricemia"], c: 1 },
+        { q: "Which Calcium Channel Blocker is highly selective for vascular smooth muscle and commonly used to treat hypertension?", a: ["Verapamil", "Diltiazem", "Amlodipine", "Digoxin"], c: 2 },
+        { q: "A major adverse effect associated with Calcium Channel Blockers like Amlodipine is:", a: ["Peripheral edema", "Hypokalemia", "Dry cough", "Lupus-like syndrome"], c: 0 },
+        { q: "Propranolol is a non-selective beta-blocker, meaning it should be avoided in patients with which concurrent condition?", a: ["Hypertension", "Asthma or COPD", "Tachycardia", "Migraine headaches"], c: 1 },
+        { q: "Which drug is a selective Beta-1 blocker suitable for hypertensive patients with respiratory issues?", a: ["Propranolol", "Atenolol", "Carvedilol", "Timolol"], c: 1 },
+        { q: "What is the primary mechanism of action of Hydralazine?", a: ["Direct arteriolar vasodilation", "Inhibition of calcium channels in the heart", "Central alpha-2 agonism", "Angiotensin receptor blockade"], c: 0 },
+        { q: "Which central Alpha-2 agonist is commonly used to treat hypertension in pregnant patients?", a: ["Lisinopril", "Methyldopa", "Losartan", "Sodium Nitroprusside"], c: 1 },
+        { q: "The toxic effects of Digoxin are seriously exacerbated by which electrolyte imbalance?", a: ["Hyperkalemia", "Hypokalemia", "Hypernatremia", "Hypocalcemia"], c: 1 },
+        { q: "What visual disturbance is a classic hallmark sign of advanced Digoxin toxicity?", a: ["Blurred vision with yellow-green halos", "Complete double vision", "Total night blindness", "Miosis"], c: 0 },
+
+        // 41-50: Renal, Electrolytes & Diuretics
+        { q: "Where is the primary site of action for loop diuretics like Furosemide?", a: ["Proximal convoluted tubule", "Thick ascending limb of the loop of Henle", "Early distal convoluted tubule", "Collecting duct"], c: 1 },
+        { q: "Thiazide diuretics like Hydrochlorothiazide exert their action in the:", a: ["Glomerulus", "Descending limb of loop of Henle", "Early distal convoluted tubule", "Cortical collecting tubule"], c: 2 },
+        { q: "Which metabolic abnormality is a common side effect of both Furosemide and Hydrochlorothiazide?", a: ["Hyperkalemia", "Hypokalemia", "Hypoglycemia", "Hypernatremia"], c: 1 },
+        { q: "Unlike loop diuretics, Thiazide diuretics can cause which alteration in calcium handling?", a: ["Hypercalcemia", "Hypocalcemia", "Hypercalciuria", "No effect on calcium"], c: 0 },
+        { q: "Spironolactone blocks the actions of which steroid hormone?", a: ["Cortisol", "Aldosterone", "Testosterone", "Estrogen"], c: 1 },
+        { q: "Which diuretic is contraindicated in patients with anuria or severe pulmonary edema due to risk of rapid volume expansion?", a: ["Furosemide", "Hydrochlorothiazide", "Mannitol", "Spironolactone"], c: 2 },
+        { q: "Ototoxicity (hearing loss) is a unique toxic risk associated with high-dose intravenous administration of:", a: ["Thiazide diuretics", "Loop diuretics (e.g., Furosemide)", "Potassium-sparing diuretics", "Carbonic anhydrase inhibitors"], c: 1 },
+        { q: "Acetazolamide works by inhibiting which enzyme in the proximal tubule?", a: ["Cyclooxygenase", "Carbonic anhydrase", "Phosphodiesterase", "Na+/K+ ATPase"], c: 1 },
+        { q: "Which medication can be used orally to manage mild hyperkalemia by binding potassium in the gastrointestinal tract?", a: ["Sodium polystyrene sulfonate", "Calcium gluconate", "Insulin with dextrose", "Sodium bicarbonate"], c: 0 },
+        { q: "What is given intravenously to immediately stabilize cardiac cell membranes during severe, life-threatening hyperkalemia?", a: ["Furosemide", "Calcium gluconate", "Potassium chloride", "Spironolactone"], c: 1 },
+
+        // 51-60: Central Nervous System Drugs
+        { q: "What is the primary therapeutic mechanism of classic antipsychotics (Haloperidol) in managing schizophrenia?", a: ["Serotonin receptor activation", "GABA receptor blockade", "Dopamine D2 receptor antagonism", "Norepinephrine reuptake inhibition"], c: 2 },
+        { q: "Parkinson-like symptoms, dystonia, and akathisia caused by antipsychotic medications are collectively called:", a: ["Anticholinergic effects", "Extrapyramidal symptoms (EPS)", "Metabolic syndrome", "Neuroleptic malignant syndrome"], c: 1 },
+        { q: "Which irreversible, late-onset neurological side effect involving involuntary tongue movements can occur from long-term typical antipsychotic use?", a: ["Acute dystonia", "Pseudoparkinsonism", "Tardive dyskinesia", "Akathisia"], c: 2 },
+        { q: "Benzodiazepines exert their sedative and anxiolytic effects by enhancing the actions of which inhibitory neurotransmitter?", a: ["Glutamate", "GABA", "Glycine", "Serotonin"], c: 1 },
+        { q: "What is the specific pharmacological antidote utilized to reverse benzodiazepine overdose or toxicity?", a: ["Naloxone", "Flumazenil", "Protamine sulfate", "Acetylcysteine"], c: 1 },
+        { q: "Fluoxetine and Sertraline belong to which class of antidepressant medications?", a: ["Tricyclic Antidepressants (TCAs)", "Monoamine Oxidase Inhibitors (MAOIs)", "Selective Serotonin Reuptake Inhibitors (SSRIs)", "Serotonin-Norepinephrine Reuptake Inhibitors (SNRIs)"], c: 2 },
+        { q: "Patients taking Monoamine Oxidase Inhibitors (MAOIs) must strictly avoid foods rich in tyramine (like aged cheese) to prevent:", a: ["Severe hypotension", "Hypertensive crisis", "Respiratory depression", "Serotonin syndrome"], c: 1 },
+        { q: "What drug is standardly considered the cornerstone mood stabilizer for Bipolar Disorder?", a: ["Diazepam", "Lithium carbonate", "Amitriptyline", "Haloperidol"], c: 1 },
+        { q: "Levodopa is combined with Carbidopa in treating Parkinson's disease primarily to:", a: ["Decrease the entry of levodopa into the brain", "Prevent peripheral conversion of levodopa to dopamine", "Act as a direct dopamine agonist", "Inhibit acetylcholinesterase"], c: 2 },
+        { q: "Phenytoin toxicity frequently causes which characteristic oral cavity side effect during long-term maintenance?", a: ["Dental caries", "Gingival hyperplasia (overgrowth of gums)", "Dry mouth", "Oral candidiasis"], c: 1 },
+
+        // 61-70: Antimicrobials & Anti-infectives
+        { q: "What is the mechanism of action of Penicillins and Cephalosporins?", a: ["Inhibition of bacterial protein synthesis", "Inhibition of bacterial cell wall synthesis", "Disruption of DNA replication", "Inhibition of folic acid synthesis"], c: 1 },
+        { q: "Beta-lactamase inhibitors like Clavulanic acid are combined with Amoxicillin to:", a: ["Reduce gastrointestinal side effects", "Protect amoxicillin from enzymatic degradation by resistant bacteria", "Increase renal excretion of the drug", "Broaden coverage to fungi"], c: 1 },
+        { q: "Which class of antibiotics is well known for causing tooth discoloration and bone growth retardation in children under 8 years?", a: ["Macrolides", "Aminoglycosides", "Tetracyclines", "Penicillins"], c: 2 },
+        { q: "Aminoglycosides like Gentamicin carry a black-box warning for which two significant toxicities?", a: ["Hepatotoxicity and bone marrow suppression", "Nephrotoxicity and ototoxicity", "Cardiotoxicity and tendon rupture", "Pancreatitis and seizures"], c: 1 },
+        { q: "What is a major risk associated with fluoroquinolones like Ciprofloxacin, especially in older adults or athletes?", a: ["Tendonitis and tendon rupture", "Tooth staining", "Red man syndrome", "Hemolytic anemia"], c: 0 },
+        { q: "Rapid intravenous infusion of Vancomycin can cause histamine release, leading to a condition known as:", a: ["Grey baby syndrome", "Red man syndrome", "Stevens-Johnson syndrome", "Fanconi syndrome"], c: 1 },
+        { q: "Which medication is widely used as a key component of first-line combination therapy for Tuberculosis (TB)?", a: ["Azithromycin", "Isoniazid", "Ciprofloxacin", "Amoxicillin"], c: 1 },
+        { q: "What unique side effect of Rifampin should patients be thoroughly counseled about beforehand?", a: ["Severe peripheral neuropathy", "Orange-red discoloration of bodily fluids (urine, sweat, tears)", "Temporary hearing loss", "Severe muscle cramps"], c: 1 },
+        { q: "Which drug is considered the gold standard systemically for treating severe, invasive systemic fungal infections?", a: ["Fluconazole", "Amphotericin B", "Nystatin", "Griseofulvin"], c: 1 },
+        { q: "Which antibiotic is the drug of choice for treating pseudomembranous colitis caused by Clostridioides difficile?", a: ["Oral Vancomycin or Metronidazole", "Amoxicillin", "Gentamicin", "Doxycycline"], c: 0 },
+
+        // 71-80: Hematology & Endocrine
+        { q: "What is the primary mechanism of action of Heparin?", a: ["Inhibition of Vitamin K epoxide reductase", "Binding to antithrombin III to accelerate inactivation of thrombin and factor Xa", "Direct inhibition of platelets", "Activation of plasminogen to plasmin"], c: 1 },
+        { q: "Which laboratory test is routinely used to monitor the therapeutic effectiveness of Unfractionated Heparin?", a: ["Prothrombin Time (PT)", "International Normalized Ratio (INR)", "Activated Partial Thromboplastin Time (aPTT)", "Platelet count only"], c: 2 },
+        { q: "What is the specific agent used to immediately reverse the effects of a Heparin overdose?", a: ["Vitamin K", "Protamine sulfate", "Aminocaproic acid", "Fresh frozen plasma"], c: 1 },
+        { q: "Warfarin exerts its anticoagulant effect by directly interfering with:", a: ["Antithrombin III", "Platelet aggregation", "Vitamin K-dependent clotting factors synthesis", "Fibrin mesh degradation"], c: 2 },
+        { q: "Which lab test is standardly monitored to manage a patient safely on oral Warfarin therapy?", a: ["aPTT", "PT/INR", "Bleeding time", "White blood cell count"], c: 1 },
+        { q: "What is the primary antidote administered to manage a toxic overdose of Warfarin?", a: ["Protamine sulfate", "Vitamin K1 (Phytonadione)", "Flumazenil", "Atropine"], c: 1 },
+        { q: "Which drug is classified as a 'clot buster' or thrombolytic agent used in acute ischemic stroke?", a: ["Enoxaparin", "Alteplase (tPA)", "Clopidogrel", "Aspirin"], c: 1 },
+        { q: "What type of insulin provides rapid onset (15 minutes) and is used right before meals?", a: ["Insulin Glargine", "NPH Insulin", "Insulin Lispro", "Regular Insulin"], c: 2 },
+        { q: "Which of the following insulins is completely peakless and provides 24-hour basal coverage?", a: ["Regular Insulin", "Insulin Glargine", "NPH Insulin", "Insulin Aspart"], c: 1 },
+        { q: "A patient presenting with cold, clammy skin, tremors, and confusion after receiving insulin is experiencing:", a: ["Hyperglycemia", "Hypoglycemia", "Diabetic Ketoacidosis", "Somogyi effect"], c: 1 },
+
+        // 81-90: Gastrointestinal & Gastroesophageal
+        { q: "Which class of drugs does Cimetidine and Ranitidine belong to?", a: ["Proton Pump Inhibitors", "H2 receptor antagonists", "Antacids", "Mucosal protectants"], c: 1 },
+        { q: "Misoprostol is specifically indicated to prevent gastric ulcers in patients taking long-term high doses of:", a: ["Antibiotics", "NSAIDs", "Corticosteroids", "Opioids"], c: 1 },
+        { q: "Which prokinetic and antiemetic drug blocks dopamine receptors in the CTZ and enhances GI tract motility?", a: ["Ondansetron", "Metoclopramide", "Loperamide", "Sucralfate"], c: 1 },
+        { q: "Ondansetron is highly effective in preventing chemotherapy-induced nausea because it blocks which receptors?", a: ["Dopamine receptors", "Histamine H1 receptors", "Serotonin (5-HT3) receptors", "Muscarinic receptors"], c: 2 },
+        { q: "Which medication is an opioid derivative used clinically to control diarrhea without causing CNS effects?", a: ["Morphine", "Loperamide", "Bisacodyl", "Lactulose"], c: 1 },
+        { q: "What type of laxative is Lactulose, which also serves to reduce blood ammonia levels in hepatic encephalopathy?", a: ["Bulk-forming laxative", "Stimulant laxative", "Osmotic laxative", "Surfactant laxative"], c: 2 },
+        { q: "Sucralfate works to heal ulcers primarily by:", a: ["Neutralizing stomach acid safely", "Inhibiting the proton pump mechanism", "Creating a protective paste-like barrier over the ulcer bed", "Killing H. pylori bacteria"], c: 2 },
+        { q: "Which medication should be avoided in children recovering from viral infections due to the risk of Reye's syndrome?", a: ["Acetaminophen", "Aspirin", "Ibuprofen", "Amoxicillin"], c: 1 },
+        { q: "What is the primary mechanism of action of local anesthetics like Lidocaine?", a: ["Blockade of potassium channels", "Blockade of voltage-gated sodium channels", "Activation of GABA receptors", "Inhibition of calcium influx"], c: 1 },
+        { q: "Why is Epinephrine frequently added to local anesthetics like Lidocaine for infiltration?", a: ["To induce systemic sedation", "To cause localized vasoconstriction, delaying systemic absorption and prolonging anesthesia", "To neutralize the acidic pH of the anesthetic", "To prevent allergic reactions"], c: 1 },
+
+        // 91-100: Safe Practices, Toxicology & Rights
+        { q: "What is the specific legal/clinical obligation of a nurse when a narcotic vial breaks or is partially wasted?", a: ["Throw it away in the general trash quickly", "Have another licensed nurse witness and co-sign the disposal", "Replace it with normal saline", "Report it directly to the police"], c: 1 },
+        { q: "Which specific organ function is measured using the serum creatinine and creatinine clearance tests?", a: ["Liver function", "Kidney function", "Pancreatic function", "Cardiac output"], c: 1 },
+        { q: "To assess liver damage before administering hepatotoxic drugs, which lab parameters are checked?", a: ["BUN and Creatinine", "AST and ALT (Transaminases)", "Amylase and Lipase", "CBC and Hemoglobin"], c: 1 },
+        { q: "What is the primary antidote for an overdose of Acetaminophen (Paracetamol)?", a: ["Naloxone", "Acetylcysteine", "Flumazenil", "Atropine"], c: 1 },
+        { q: "A medication error occurred but did not reach the patient. This scenario is formally classified as a:", a: ["Adverse event", "Sentinel event", "Near miss", "Malpractice suit"], c: 2 },
+        { q: "What schedule of controlled substances carries the highest abuse potential and has no currently accepted medical use?", a: ["Schedule I", "Schedule II", "Schedule III", "Schedule V"], c: 0 },
+        { q: "What is a primary clinical indicator of an acute anaphylactic drug reaction requiring immediate intervention?", a: ["Mild localized itching", "Hypotension and bronchospasm (wheezing)", "Slight elevation in body temperature", "Constipation"], c: 1 },
+        { q: "When verifying the 'Right Dose', the nurse notices a calculation that requires 5 vials of an injection. What should the nurse do?", a: ["Administer all 5 vials immediately", "Recalculate and verify the order with another nurse or pharmacist before administering", "Give only 1 vial instead", "Ask the patient how many vials they usually get"], c: 1 },
+        { q: "Which route of drug administration bypasses the gastrointestinal tract completely?", a: ["Oral", "Sublingual", "Parenteral (IV, IM, SC)", "Rectal"], c: 2 },
+        { q: "What is the primary clinical purpose of maintaining a drug within its designated therapeutic range?", a: ["To maximize hospital profit margin", "To achieve efficacy without causing significant toxic adverse effects", "To guarantee the drug never expires", "To minimize the frequency of vital sign monitoring"], c: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = new Array(quizData.length).fill(null);
+    let score = 0;
+
+    const progressEl = document.getElementById('progress');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsContainerEl = document.getElementById('options-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const quizBox = document.getElementById('quiz-box');
+    const resultContainer = document.getElementById('result-container');
+    const scoreTextEl = document.getElementById('score-text');
+    const feedbackTextEl = document.getElementById('feedback-text');
+
+    function loadQuestion() {
+        const currentQuestion = quizData[currentQuestionIndex];
+        progressEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+        questionTextEl.innerText = currentQuestion.q;
+        optionsContainerEl.innerHTML = '';
+
+        const hasAnswered = userAnswers[currentQuestionIndex] !== null;
+
+        currentQuestion.a.forEach((option, index) => {
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'quiz-option';
+            radio.value = index;
+
+            // Handle styles if already answered previously
+            if (hasAnswered) {
+                label.classList.add('disabled');
+                if (index === currentQuestion.c) {
+                    label.classList.add('correct'); // Highlight correct answer green
+                }
+                if (userAnswers[currenradio.checked = true;
+                    if (index !== currentQuestion.c) {
+                        label.classList.add('wrong'); // Highlight chosen wrong answer red
+                    }
+                }
+            }
+
+            label.addEventListener('click', () => {
+                if (userAnswers[currentQuestionIndex] === null) {
+                    selectOption(index, label);
+                }
+            });
+
+            label.appendChild(radio);
+            label.appendChild(document.createTextNode(option));
+            optionsContainerEl.appendChild(label);
+        });
+
+        prevBtn.disabled = currentQuestionIndex === 0;
+
+        if (currentQuestionIndex === quizData.length - 1) {
+            nextBtn.classList.add('hide');
+            submitBtn.classList.remove('hide');
+        } else {
+            nextBtn.classList.remove('hide');
+            submitBtn.classList.add('hide');
+        }
+    }
+
+    function selectOption(selectedIndex, selectedLabel) {
+        const currentQuestion = quizData[currentQuestionIndex];
+        userAnswers[currentQuestionIndex] = selectedIndex;
+
+        const allLabels = optionsContainerEl.querySelectorAll('.option-label');
+        allLabels.forEach((label, index) => {
+            label.classList.add('disabled'); // Disable clicking after selection
+            if (index === currentQuestion.c) {
+                label.classList.add('correct'); // Turn correct option green
+            }
+        });
+
+        if (selectedIndex !== currentQuestion.c) {
+            selectedLabel.classList.add('wrong'); // Turn wrong option red
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < quizData.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
+    }
+
+    function showResults() {
+        score = 0;
+        quizData.forEach((question, index) => {
+            if (userAnswers[index] === question.c) {
+                score++;
+            }
+        });
+
+        quizBox.classList.add('hide');
+        resultContainer.classList.remove('hide');
+        scoreTextEl.innerText = `${score} / ${quizData.length}`;
+
+        if (score >= 85) {
+            feedbackTextEl.innerText = "Excellent! You have standard clinical mastery of Pharmacology!";
+        } else if (score >= 70) {
+            feedbackTextEl.innerText = "Good job! You passed the assessment successfully.";
+        } else {
+            feedbackTextEl.innerText = "Review the incorrect topics and try again to build clinical competence.";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        userAnswers = new Array(quizData.length).fill(null);
+        resultContainer.classList.add('hide');
+        quizBox.classList.remove('hide');
+        loadQuestion();
+    }
+
+    // Initialize Quiz Setup
+    loadQuestion();
+</script>
+
+</body>
+</html>
